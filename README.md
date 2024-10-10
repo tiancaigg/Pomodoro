@@ -72,5 +72,9 @@ build with: python build_mac_app.py
 
 <img width="337" alt="image" src="https://github.com/user-attachments/assets/72521543-58d5-4bfd-9f15-78d3e6d27a43">
 <img width="490" alt="image" src="https://github.com/user-attachments/assets/37efb09d-024f-4433-b5ca-029d77d7cbec">
-![image](https://github.com/user-attachments/assets/aad584e0-cf98-4932-9b89-dd8698e47aa5)
+
+![image](https://github.com/user-attachments/assets/37d28c29-87d2-4225-ac1f-3623ecb7e34e)
+![image](https://github.com/user-attachments/assets/af3c169b-baef-42f4-abc2-7df23c800eb1)
+
+
 
