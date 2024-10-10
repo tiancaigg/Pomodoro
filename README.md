@@ -47,6 +47,27 @@ This Pomodoro App is a productivity tool designed to help you manage your work a
 - 切换"浮动"按钮以保持窗口在其他应用程序之上
 - 根据需要调整窗口大小 - 当窗口变小时，它会自动适应为紧凑模式
 
+## Do Not Disturb (DND) Feature
+
+This Pomodoro app includes a feature to automatically toggle the Do Not Disturb mode on your system when a Pomodoro session starts and ends. To use this feature, you need to set up two shortcuts on your system:
+
+1. "DND ON" - A shortcut to enable Do Not Disturb mode
+2. "DND OFF" - A shortcut to disable Do Not Disturb mode
+
+### Setting up shortcuts
+
+#### For English system users:
+1. Open the Shortcuts app on your Mac.
+2. Create a new shortcut named "DND ON" that enables Do Not Disturb.
+3. Create another shortcut named "DND OFF" that disables Do Not Disturb.
+
+#### For Chinese system users:
+1. 打开Mac上的"快捷指令"应用。
+2. 创建一个名为"DND ON"的新快捷指令，用于开启勿扰模式。
+3. 创建另一个名为"DND OFF"的快捷指令，用于关闭勿扰模式。
+
+Make sure these shortcuts are accessible system-wide for the Pomodoro app to use them effectively.
+
 build with: python build_mac_app.py
 
 <img width="337" alt="image" src="https://github.com/user-attachments/assets/72521543-58d5-4bfd-9f15-78d3e6d27a43">
