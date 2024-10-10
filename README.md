@@ -1,4 +1,3 @@
-It is a pomodoro app.
 # Pomodoro App
 
 ## English
