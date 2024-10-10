@@ -1,7 +1,4 @@
 # Pomodoro App
-
-## English
-
 This Pomodoro App is a productivity tool designed to help you manage your work and break times effectively using the Pomodoro Technique. It features a customizable timer, statistics tracking, and various user-friendly options.
 
 ### Features:
@@ -25,8 +22,6 @@ This Pomodoro App is a productivity tool designed to help you manage your work a
 - Adjust the opacity slider to change the window's transparency
 - Toggle the "Float" button to keep the window on top of other applications
 - Resize the window as needed - it will adapt to a compact mode when small
-
-## 中文
 
 这个番茄钟应用是一个生产力工具，旨在帮助您使用番茄工作法有效管理工作和休息时间。它具有可自定义的计时器、统计跟踪和各种用户友好的选项。
 
