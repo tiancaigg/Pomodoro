@@ -1,3 +1,4 @@
+import subprocess
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
                              QLabel, QSpinBox, QTextEdit, QComboBox, QSlider)
 from PyQt6.QtCore import QTimer, Qt, QPropertyAnimation, QRect, QEvent
@@ -25,6 +26,7 @@ class PomodoroApp(QWidget):
         self.opacity_timer.setSingleShot(True)
         
         self.resizeEvent = self.resizeEvent  # Connect the resize event
+        self.dnd_active = False
 
     def initUI(self):
         self.setWindowTitle('Pomodoro App')
@@ -176,9 +178,15 @@ class PomodoroApp(QWidget):
         self.config_manager.config["timer_duration"] = value
         self.config_manager.save_config()
 
+    def toggle_dnd(self):
+        shortcut_name = "DND ON" if not self.dnd_active else "DND OFF"
+        subprocess.run(["shortcuts", "run", shortcut_name])
+        self.dnd_active = not self.dnd_active
+
     def start_timer(self):
         if not self.is_resting:
             self.time_remaining = self.time_spinbox.value() * 60
+            self.toggle_dnd()  # Enable DND when starting a Pomodoro
         else:
             self.time_remaining = self.config_manager.config["rest_duration"] * 60
         self.timer.start(1000)
@@ -199,6 +207,7 @@ class PomodoroApp(QWidget):
             })
             self.config_manager.save_config()
             self.update_stats()
+            self.toggle_dnd()  # Disable DND when aborting a Pomodoro
         self.is_resting = False
 
     def update_timer(self):
@@ -224,6 +233,7 @@ class PomodoroApp(QWidget):
                 self.update_stats()
                 self.is_resting = True
                 self.time_label.setText(f'{self.config_manager.config["rest_duration"]:02d}:00')
+                self.toggle_dnd()  # Disable DND when Pomodoro ends
                 self.start_timer()
             else:
                 self.is_resting = False
