@@ -74,7 +74,7 @@ build with: python build_mac_app.py
 <img width="490" alt="image" src="https://github.com/user-attachments/assets/37efb09d-024f-4433-b5ca-029d77d7cbec">
 
 ![image](https://github.com/user-attachments/assets/37d28c29-87d2-4225-ac1f-3623ecb7e34e)
-![image](https://github.com/user-attachments/assets/af3c169b-baef-42f4-abc2-7df23c800eb1)
+
 
 
 
