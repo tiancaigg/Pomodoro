@@ -180,8 +180,14 @@ class PomodoroApp(QWidget):
 
     def toggle_dnd(self):
         shortcut_name = "DND ON" if not self.dnd_active else "DND OFF"
-        subprocess.run(["shortcuts", "run", shortcut_name])
-        self.dnd_active = not self.dnd_active
+        try:
+            result = subprocess.run(["shortcuts", "run", shortcut_name], capture_output=True, text=True, check=True)
+            if result.returncode == 0:
+                self.dnd_active = not self.dnd_active
+        except subprocess.CalledProcessError:
+            print(f"Warning: Unable to toggle DND. Shortcut '{shortcut_name}' may not exist.")
+        except FileNotFoundError:
+            print("Warning: 'shortcuts' command not found. Unable to toggle DND.")
 
     def start_timer(self):
         if not self.is_resting:
