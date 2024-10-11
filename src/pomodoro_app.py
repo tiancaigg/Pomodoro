@@ -2,7 +2,7 @@ import subprocess
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
                              QLabel, QSpinBox, QTextEdit, QComboBox, QSlider)
 from PyQt6.QtCore import QTimer, Qt, QPropertyAnimation, QRect, QEvent
-from PyQt6.QtGui import QIcon, QFont
+from PyQt6.QtGui import QIcon, QFont, QColor, QPalette
 from datetime import datetime, timedelta
 from config_manager import ConfigManager
 from utils import play_sound
@@ -27,6 +27,7 @@ class PomodoroApp(QWidget):
         
         self.resizeEvent = self.resizeEvent  # Connect the resize event
         self.dnd_active = False
+        self.update_window_color()  # Add this line to set initial color
 
     def initUI(self):
         self.setWindowTitle('Pomodoro App')
@@ -199,6 +200,7 @@ class PomodoroApp(QWidget):
         self.start_button.setEnabled(False)
         self.abort_button.setEnabled(True)
         self.start_time = datetime.now()
+        self.update_window_color()  # Add this line
 
     def abort_timer(self):
         self.timer.stop()
@@ -215,6 +217,7 @@ class PomodoroApp(QWidget):
             self.update_stats()
             self.toggle_dnd()  # Disable DND when aborting a Pomodoro
         self.is_resting = False
+        self.update_window_color()  # Add this line
 
     def update_timer(self):
         if self.time_remaining > 0:
@@ -244,6 +247,8 @@ class PomodoroApp(QWidget):
             else:
                 self.is_resting = False
                 self.time_label.setText(f'{self.time_spinbox.value():02d}:00')
+            
+            self.update_window_color()  # Add this line
 
     def blink_and_shake(self):
         def reset_style():
@@ -332,3 +337,13 @@ class PomodoroApp(QWidget):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.update_widget_visibility()
+
+    def update_window_color(self):
+        if self.timer.isActive() and not self.is_resting:
+            color = QColor("#e66d5e")  # Light red for Pomodoro
+        else:
+            color = QColor("#E0F4D6")  # Light green for not running or resting
+        
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, color)
+        self.setPalette(palette)
