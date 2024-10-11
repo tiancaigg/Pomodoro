@@ -179,35 +179,40 @@ class PomodoroApp(QWidget):
         self.config_manager.config["timer_duration"] = value
         self.config_manager.save_config()
 
-    def toggle_dnd(self):
-        shortcut_name = "DND ON" if not self.dnd_active else "DND OFF"
+    def toggle_dnd(self, enable):
+        shortcut_name = "DND ON" if enable else "DND OFF"
         try:
             result = subprocess.run(["shortcuts", "run", shortcut_name], capture_output=True, text=True, check=True)
             if result.returncode == 0:
-                self.dnd_active = not self.dnd_active
-        except subprocess.CalledProcessError:
-            print(f"Warning: Unable to toggle DND. Shortcut '{shortcut_name}' may not exist.")
+                self.dnd_active = enable
+                print(f"DND {'enabled' if enable else 'disabled'}")
+            else:
+                print(f"Failed to run shortcut: {shortcut_name}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error running shortcut: {e}")
         except FileNotFoundError:
             print("Warning: 'shortcuts' command not found. Unable to toggle DND.")
 
     def start_timer(self):
         if not self.is_resting:
             self.time_remaining = self.time_spinbox.value() * 60
-            self.toggle_dnd()  # Enable DND when starting a Pomodoro
+            self.toggle_dnd(True)  # Enable DND when starting a Pomodoro
+            self.abort_button.setText("Give up")
         else:
             self.time_remaining = self.config_manager.config["rest_duration"] * 60
+            self.abort_button.setText("Start Now")
         self.timer.start(1000)
         self.start_button.setEnabled(False)
         self.abort_button.setEnabled(True)
         self.start_time = datetime.now()
-        self.update_window_color()  # Add this line
+        self.update_window_color()  # Update color when timer starts
 
     def abort_timer(self):
         self.timer.stop()
         self.start_button.setEnabled(True)
         self.abort_button.setEnabled(False)
-        self.time_label.setText(f'{self.time_spinbox.value():02d}:00')
         if not self.is_resting:
+            self.time_label.setText(f'{self.time_spinbox.value():02d}:00')
             self.config_manager.config['aborted_history'].append({
                 'date': datetime.now().strftime('%Y-%m-%d'),
                 'time': datetime.now().strftime('%H:%M:%S'),
@@ -215,9 +220,14 @@ class PomodoroApp(QWidget):
             })
             self.config_manager.save_config()
             self.update_stats()
-            self.toggle_dnd()  # Disable DND when aborting a Pomodoro
+            self.toggle_dnd(False)  # Disable DND when aborting a Pomodoro
+        else:
+            # If resting, start a new Pomodoro immediately
+            self.is_resting = False
+            self.start_timer()
+            return
         self.is_resting = False
-        self.update_window_color()  # Add this line
+        self.update_window_color()
 
     def update_timer(self):
         if self.time_remaining > 0:
@@ -229,7 +239,6 @@ class PomodoroApp(QWidget):
             self.start_button.setEnabled(True)
             self.abort_button.setEnabled(False)
             play_sound()
-            self.blink_and_shake()
             
             if not self.is_resting:
                 self.config_manager.config['pomodoro_history'].append({
@@ -242,22 +251,32 @@ class PomodoroApp(QWidget):
                 self.update_stats()
                 self.is_resting = True
                 self.time_label.setText(f'{self.config_manager.config["rest_duration"]:02d}:00')
-                self.toggle_dnd()  # Disable DND when Pomodoro ends
-                self.start_timer()
+                self.toggle_dnd(False)  # Disable DND when Pomodoro ends
             else:
                 self.is_resting = False
                 self.time_label.setText(f'{self.time_spinbox.value():02d}:00')
+                self.abort_button.setText("Give up")
             
-            self.update_window_color()  # Add this line
+            self.update_window_color()  # Update color after changing state
+            self.blink_and_shake()  # Move this after updating the window color
+            
+            if self.is_resting:
+                self.start_timer()  # Automatically start the rest timer
 
     def blink_and_shake(self):
+        original_color = self.palette().color(QPalette.ColorRole.Window)
+        
         def reset_style():
-            self.setStyleSheet("")
+            palette = self.palette()
+            palette.setColor(QPalette.ColorRole.Window, original_color)
+            self.setPalette(palette)
         
         for i in range(5):  # Blink 5 times
-            self.setStyleSheet("background-color: yellow;")
+            palette = self.palette()
+            palette.setColor(QPalette.ColorRole.Window, QColor("yellow"))
+            self.setPalette(palette)
             QTimer.singleShot(200, reset_style)
-            QTimer.singleShot(400, lambda: self.setStyleSheet("background-color: yellow;"))
+            QTimer.singleShot(400, lambda: self.setPalette(palette))
             QTimer.singleShot(600, reset_style)
         
         # Shake animation
@@ -339,11 +358,14 @@ class PomodoroApp(QWidget):
         self.update_widget_visibility()
 
     def update_window_color(self):
-        if self.timer.isActive() and not self.is_resting:
-            color = QColor("#e66d5e")  # Light red for Pomodoro
+        if self.timer.isActive():
+            if self.is_resting:
+                color = QColor("#E0F4D6")  # Light green for rest period
+            else:
+                color = QColor("#e66d5e")  # Light red for active Pomodoro
         else:
-            color = QColor("#E0F4D6")  # Light green for not running or resting
-        
+            color = QColor("#E0F4D6")  # Light green for inactive state
+
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.Window, color)
         self.setPalette(palette)
