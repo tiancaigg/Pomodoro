@@ -2,7 +2,8 @@
 
 A productivity tool designed to help you manage your work and break times effectively using the Pomodoro Technique. This app features a customizable timer, statistics tracking, and various user-friendly options.
 
-![Pomodoro App Screenshot](https://github.com/user-attachments/assets/72521543-58d5-4bfd-9f15-78d3e6d27a43)
+<img width="207" alt="image" src="https://github.com/user-attachments/assets/7a011308-51fe-47e8-8ebf-e3c8ec804e1f">
+
 
 ## Features
 
