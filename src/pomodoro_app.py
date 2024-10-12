@@ -193,7 +193,25 @@ class PomodoroApp(QWidget):
         except FileNotFoundError:
             print("Warning: 'shortcuts' command not found. Unable to toggle DND.")
 
+    def purge_old_history(self):
+        thirty_days_ago = datetime.now().date() - timedelta(days=30)
+        
+        self.config_manager.config['pomodoro_history'] = [
+            entry for entry in self.config_manager.config['pomodoro_history']
+            if datetime.strptime(entry['date'], '%Y-%m-%d').date() > thirty_days_ago
+        ]
+        
+        self.config_manager.config['aborted_history'] = [
+            entry for entry in self.config_manager.config['aborted_history']
+            if datetime.strptime(entry['date'], '%Y-%m-%d').date() > thirty_days_ago
+        ]
+        
+        self.config_manager.save_config()
+
     def start_timer(self):
+        self.purge_old_history()
+        self.update_stats()
+        
         if not self.is_resting:
             self.time_remaining = self.time_spinbox.value() * 60
             self.toggle_dnd(True)  # Enable DND when starting a Pomodoro
@@ -208,6 +226,8 @@ class PomodoroApp(QWidget):
         self.update_window_color()  # Update color when timer starts
 
     def abort_timer(self):
+        self.purge_old_history()
+        
         self.timer.stop()
         self.start_button.setEnabled(True)
         self.abort_button.setEnabled(False)
