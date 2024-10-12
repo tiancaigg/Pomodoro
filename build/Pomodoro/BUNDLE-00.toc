@@ -1,3 +1,0 @@
-([('Pomodoro',
-   '/Users/hudonghui/Codes/pomodoro_mac/dist/Pomodoro',
-   'EXECUTABLE')],)
