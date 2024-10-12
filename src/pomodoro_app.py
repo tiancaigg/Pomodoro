@@ -2,10 +2,37 @@ import subprocess
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
                              QLabel, QSpinBox, QTextEdit, QComboBox, QSlider)
 from PyQt6.QtCore import QTimer, Qt, QPropertyAnimation, QRect, QEvent
-from PyQt6.QtGui import QIcon, QFont, QColor, QPalette
+from PyQt6.QtGui import QIcon, QFont, QColor, QPalette, QPainter
 from datetime import datetime, timedelta
 from config_manager import ConfigManager
 from utils import play_sound
+
+class EncouragementButton(QPushButton):
+    def __init__(self, encouragement_text, give_up_text, parent=None):
+        super().__init__(encouragement_text, parent)
+        self.setMouseTracking(True)
+        self.encouragement_text = encouragement_text
+        self.give_up_text = give_up_text
+
+    def enterEvent(self, event):
+        if self.isEnabled():
+            self.setText(self.give_up_text)
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        if self.isEnabled():
+            self.setText(self.encouragement_text)
+        super().leaveEvent(event)
+
+    def setEncouragementText(self, text):
+        self.encouragement_text = text
+        if not self.underMouse():
+            self.setText(text)
+
+    def setGiveUpText(self, text):
+        self.give_up_text = text
+        if self.underMouse():
+            self.setText(text)
 
 class PomodoroApp(QWidget):
     def __init__(self):
@@ -55,7 +82,7 @@ class PomodoroApp(QWidget):
         self.time_spinbox.valueChanged.connect(self.update_timer_duration)
         self.start_button = QPushButton('Start')
         self.start_button.clicked.connect(self.start_timer)
-        self.abort_button = QPushButton('Give up')
+        self.abort_button = EncouragementButton('Focus!', 'Give up')
         self.abort_button.clicked.connect(self.abort_timer)
         self.abort_button.setEnabled(False)
         
@@ -215,15 +242,17 @@ class PomodoroApp(QWidget):
         if not self.is_resting:
             self.time_remaining = self.time_spinbox.value() * 60
             self.toggle_dnd(True)  # Enable DND when starting a Pomodoro
-            self.abort_button.setText("Give up")
+            self.abort_button.setEncouragementText("Focus!")
+            self.abort_button.setGiveUpText("Give up")
         else:
             self.time_remaining = self.config_manager.config["rest_duration"] * 60
-            self.abort_button.setText("Start Now")
+            self.abort_button.setEncouragementText("Start Now")
+            self.abort_button.setGiveUpText("Start Now")
         self.timer.start(1000)
         self.start_button.setEnabled(False)
         self.abort_button.setEnabled(True)
         self.start_time = datetime.now()
-        self.update_window_color()  # Update color when timer starts
+        self.update_window_color()
 
     def abort_timer(self):
         self.purge_old_history()
@@ -272,13 +301,16 @@ class PomodoroApp(QWidget):
                 self.is_resting = True
                 self.time_label.setText(f'{self.config_manager.config["rest_duration"]:02d}:00')
                 self.toggle_dnd(False)  # Disable DND when Pomodoro ends
+                self.abort_button.setEncouragementText("Start Now")
+                self.abort_button.setGiveUpText("Start Now")
             else:
                 self.is_resting = False
                 self.time_label.setText(f'{self.time_spinbox.value():02d}:00')
-                self.abort_button.setText("Give up")
+                self.abort_button.setEncouragementText("Focus!")
+                self.abort_button.setGiveUpText("Give up")
             
-            self.update_window_color()  # Update color after changing state
-            self.blink_and_shake()  # Move this after updating the window color
+            self.update_window_color()
+            self.blink_and_shake()
             
             if self.is_resting:
                 self.start_timer()  # Automatically start the rest timer
