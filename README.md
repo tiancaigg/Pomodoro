@@ -3,7 +3,7 @@
 A productivity tool designed to help you manage your work and break times effectively using the Pomodoro Technique. This app features a customizable timer, statistics tracking, and various user-friendly options.
 
 <img width="207" alt="image" src="https://github.com/user-attachments/assets/7a011308-51fe-47e8-8ebf-e3c8ec804e1f">
-
+![image](https://github.com/user-attachments/assets/b801f079-6b24-4e65-9a0e-88442c9b3a88)
 
 ## Features
 
@@ -40,12 +40,14 @@ The app can automatically toggle your system's Do Not Disturb mode. To use this 
 
 Make sure these shortcuts are accessible system-wide.
 
+
 ### Setting up shortcuts
 
 #### For macOS users:
 1. Open the Shortcuts app
 2. Create the "DND ON" and "DND OFF" shortcuts
 3. Ensure they are available to the Pomodoro app
+![image](https://github.com/user-attachments/assets/e7cf773b-6295-449f-9c5e-b76b8781f2eb)
 
 ## Building the App
 
